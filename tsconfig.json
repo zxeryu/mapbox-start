@@ -1,0 +1,30 @@
+{
+  "compileOnSave": true,
+  "compilerOptions": {
+    "baseUrl": ".",
+    "rootDir": ".",
+    "paths": {
+      "*": ["__types__/*", "*"],
+      "@babel/types": ["node_modules/@babel/types"]
+    },
+    "resolveJsonModule": true,
+    "noImplicitAny": true,
+    "allowSyntheticDefaultImports": true,
+    "esModuleInterop": true,
+    "moduleResolution": "Node",
+    "jsx": "react",
+    "module": "commonjs",
+    "target": "es5",
+    "pretty": true,
+    "strict": true,
+    //    "sourceMap": true
+    "allowJs": false,
+    /* emit ts declaration cache */
+    "declaration": true,
+    "noEmitOnError": false,
+    "emitDeclarationOnly": true,
+    "outDir": ".tmp",
+    "experimentalDecorators": true
+  },
+  "exclude": [".tmp/*", "dist/*", "node_modules/*"]
+}
