@@ -1,6 +1,7 @@
-import { Map, MapboxOptions } from "mapbox-gl";
+import M, { Map, MapboxOptions } from "mapbox-gl";
 import React, { createContext, CSSProperties, ReactNode, useContext, useEffect, useRef, useState } from "react";
-import { getMapboxGL } from "./utils";
+
+export const MapboxGL: typeof M = M || window.mapboxgl;
 
 const MapContext = createContext<{
   map: Map;
@@ -19,7 +20,6 @@ export const Mapbox = ({ children, divStyle, ...options }: TMapbox) => {
 
   useEffect(() => {
     if (ref.current && !map) {
-      const MapboxGL = getMapboxGL();
       const map = new MapboxGL.Map({ ...options, container: ref.current });
       map.once("load", () => {
         setMap(map);
