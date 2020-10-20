@@ -1,34 +1,35 @@
-import React, { createContext, ReactNode, useContext, useEffect, useRef, useState } from "react";
+import React, { createContext, ReactNode, useContext, useEffect, useMemo, useRef } from "react";
 import { LngLatLike, MarkerOptions } from "mapbox-gl";
 import { MapboxGL, useMap } from "../Map";
+
+const MarkerContext = createContext<{
+  marker?: typeof MapboxGL.Marker;
+}>({} as any);
+
+export const useMarker = () => useContext(MarkerContext).marker;
 
 export interface IMarker extends Omit<MarkerOptions, "element"> {
   lngLat: LngLatLike;
   children: ReactNode;
 }
 
-export interface IMarkerContext {
-  marker?: typeof MapboxGL.Marker;
-}
-
-const MarkerContext = createContext<IMarkerContext>({} as any);
-
-export const useMarker = () => useContext(MarkerContext).marker;
-
 export const Marker = ({ children, lngLat, ...options }: IMarker) => {
   const map = useMap();
   const ref = useRef<HTMLDivElement>(null);
-  const [marker, setMarker] = useState<typeof MapboxGL.Marker>();
+
+  const marker: any = useMemo(() => {
+    if (!ref.current) return undefined;
+    return new MapboxGL.Marker(ref.current, { ...options });
+  }, []);
+
   useEffect(() => {
-    if (!ref.current) return;
-    const marker = new MapboxGL.Marker(ref.current, { ...options });
+    if (!marker) return;
     marker.setLngLat(lngLat);
     marker.addTo(map);
-    setMarker(marker as any);
     return () => {
       marker && marker.remove();
     };
-  }, []);
+  }, [marker]);
   return (
     <div ref={ref}>
       <MarkerContext.Provider value={{ marker }}>{children}</MarkerContext.Provider>
