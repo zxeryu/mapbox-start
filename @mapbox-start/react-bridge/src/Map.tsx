@@ -1,7 +1,10 @@
 import M, { Map, MapboxOptions } from "mapbox-gl";
 import React, { createContext, CSSProperties, ReactNode, useContext, useEffect, useRef, useState } from "react";
 
-export const MapboxGL: typeof M = M || window.mapboxgl;
+let mapFromUser: typeof M | undefined;
+
+export const setMapboxGL = (m: typeof M) => (mapFromUser = m);
+export const MapboxGL: typeof M = window.mapboxgl || mapFromUser;
 
 const MapContext = createContext<{
   map: Map;
@@ -10,11 +13,11 @@ const MapContext = createContext<{
 export const useMap = () => useContext(MapContext).map;
 
 export type TMapbox = Omit<MapboxOptions, "container"> & {
-  children: ReactNode;
+  children?: ReactNode;
   divStyle?: CSSProperties;
 };
 
-export const Mapbox = ({ children, divStyle, ...options }: TMapbox) => {
+export const SpecMap = ({ children, divStyle, ...options }: TMapbox) => {
   const ref = useRef<HTMLDivElement>(null);
   const [map, setMap] = useState<Map>();
 
