@@ -13,7 +13,7 @@ export interface IMarker extends Omit<MarkerOptions, "element"> {
   children: ReactNode;
 }
 
-export const Marker = ({ children, lngLat, ...options }: IMarker) => {
+export const SpecMarker = ({ children, lngLat, ...options }: IMarker) => {
   const map = useMap();
   const ref = useRef<HTMLDivElement>(null);
 
@@ -29,7 +29,7 @@ export const Marker = ({ children, lngLat, ...options }: IMarker) => {
     return () => {
       marker && marker.remove();
     };
-  }, [marker]);
+  }, [marker, lngLat]);
   return (
     <div ref={ref}>
       <MarkerContext.Provider value={{ marker }}>{children}</MarkerContext.Provider>

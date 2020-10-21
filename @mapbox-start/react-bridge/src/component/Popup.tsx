@@ -13,7 +13,7 @@ export interface IPopup extends PopupOptions {
   children: ReactNode;
 }
 
-export const Popup = ({ children, lngLat, ...options }: IPopup) => {
+export const SpecPopup = ({ children, lngLat, ...options }: IPopup) => {
   const ref = useRef<HTMLDivElement>(null);
   const popup: any = useMemo(() => {
     return new MapboxGL.Popup({ ...options });
