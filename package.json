@@ -17,6 +17,7 @@
     "start-v": "cd example/demo-vue && webpack-dev-server"
   },
   "dependencies": {
+    "@turf/turf": "^5.1.6",
     "lodash": "^4.17.20",
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
