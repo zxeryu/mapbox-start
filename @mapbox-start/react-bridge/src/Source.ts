@@ -18,7 +18,6 @@ import {
   VideoSourceRaw,
 } from "mapbox-gl";
 import { v4 as uuid } from "uuid";
-import { some } from "lodash";
 
 type MapSourceImpl = {
   vector: VectorSourceImpl;
@@ -49,9 +48,9 @@ export type MapSourceOptions = {
 };
 
 export class Source<T extends keyof MapSourceOptions, TLayerID extends string = string> {
-  private m: Map | null = null;
+  private m: Map | undefined;
 
-  static from<T extends keyof MapSourceOptions>(type: T, opts: MapSourceOptions[T]) {
+  static from<T extends keyof MapSourceOptions>(type: T, opts: MapSourceOptions[T]): Source<T> {
     const t = type === "rasterDem" ? "raster-dem" : type;
     return new Source<T>({ ...opts, type: t } as any);
   }
@@ -77,12 +76,14 @@ export class Source<T extends keyof MapSourceOptions, TLayerID extends string = 
 
   remove() {
     if (!this.m) return;
-    const isUse = some(this.m.getStyle().layers, (layer) => {
-      return layer.source === this.id;
-    });
+    let isUse = false;
+    const ls = this.m.getStyle().layers;
+    if (Array.isArray(ls)) {
+      isUse = ls.some((l) => l.source === this.id);
+    }
     if (!isUse) {
       this.m.removeSource(this.id);
-      this.m = null;
+      this.m = undefined;
     }
   }
 }

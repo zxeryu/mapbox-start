@@ -69,8 +69,6 @@ type MapLayerLP = {
 
 interface ISpecLayer<T extends keyof MapLayerLP> {
   id?: string;
-  refreshBy?: any[];
-  children?: ReactNode;
   sourceLayer?: string;
   layerRef?: string;
   paint?: MapLayerLP[T]["paint"];
@@ -80,6 +78,9 @@ interface ISpecLayer<T extends keyof MapLayerLP> {
   maxzoom?: number;
   interactive?: boolean;
   filter?: any[];
+  before?: string;
+  refreshBy?: any[];
+  children?: ReactNode;
 }
 
 const createLayer = <T extends keyof MapLayerLP>(type: T) => {
@@ -94,6 +95,8 @@ const createLayer = <T extends keyof MapLayerLP>(type: T) => {
     filter,
     layout,
     paint,
+    //
+    before,
     refreshBy,
     children,
   }: ISpecLayer<T>) => {
@@ -118,7 +121,7 @@ const createLayer = <T extends keyof MapLayerLP>(type: T) => {
         paint,
         ref: layerRef,
       });
-      l.addTo(map);
+      l.addTo(map, before);
     }, refreshBy);
 
     return (

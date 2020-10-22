@@ -3,11 +3,11 @@ import { v4 as uuid } from "uuid";
 import { Map, Layer as ILayer } from "mapbox-gl";
 
 export class Layer {
-  static from(source: Source<any>, sourceLayer?: string) {
+  static from(source: Source<any>, sourceLayer?: string): Layer {
     return new Layer(source, undefined, sourceLayer ? { "source-layer": sourceLayer } : {});
   }
 
-  private m: Map | null = null;
+  private m: Map | undefined;
   constructor(private source: Source<any>, public id = `${source.id}:${uuid()}`, private spec: Omit<ILayer, "id">) {}
 
   named(id?: string) {
@@ -74,6 +74,6 @@ export class Layer {
     this.m.removeLayer(this.id);
     this.source.remove();
 
-    this.m = null;
+    this.m = undefined;
   }
 }

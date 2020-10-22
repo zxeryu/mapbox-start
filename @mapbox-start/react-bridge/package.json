@@ -5,16 +5,14 @@
   "author": "zx <zxpstudy@163.com>",
   "homepage": "https://github.com/zxeryu/mapbox-start#readme",
   "license": "MIT",
-  "main": "lib/react-bridge.js",
-  "directories": {
-    "lib": "lib",
-    "test": "__tests__"
-  },
   "files": [
-    "lib"
+    "dist/"
   ],
+  "types": "dist/index.d.ts",
+  "main": "dist/index.js",
+  "module": "dist/index.es.js",
   "publishConfig": {
-    "registry": "https://registry.yarnpkg.com"
+    "access": "public"
   },
   "repository": {
     "type": "git",
@@ -27,9 +25,11 @@
     "url": "https://github.com/zxeryu/mapbox-start/issues"
   },
   "peerDependencies": {
-    "uuid": "^8.3.1"
+    "@babel/runtime-corejs3": "*",
+    "react": "16.x",
+    "uuid": "8.x"
   },
-  "dependencies": {
+  "devDependencies": {
     "@types/mapbox-gl": "^1.12.5"
   }
 }
