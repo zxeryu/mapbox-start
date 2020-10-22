@@ -1,6 +1,7 @@
 import { Source } from "./Source";
 import { v4 as uuid } from "uuid";
 import { Map, Layer as ILayer } from "mapbox-gl";
+import { pickBy, identity } from "lodash";
 
 export class Layer {
   static from(source: Source<any>, sourceLayer?: string): Layer {
@@ -17,7 +18,7 @@ export class Layer {
   clone(spec: Omit<ILayer, "id" | "source-layer" | "source">) {
     return new Layer(this.source, this.id, {
       ...this.spec,
-      ...spec,
+      ...pickBy(spec, identity),
     });
   }
 

@@ -102,16 +102,20 @@ const createLayer = <T extends keyof MapLayerLP>(type: T) => {
   }: ISpecLayer<T>) => {
     const map = useMap();
     const source = useSpecSource();
-    const layer = useMemo(() => Layer.from(source, sourceLayer).named(id).addTo(map), []);
+    const layer = useMemo(() => {
+      const t = type === "fillExtrusion" ? "fill-extrusion" : type;
+      return Layer.from(source, sourceLayer)
+        .named(id)
+        .clone({ type: t as ILayer["type"] })
+        .addTo(map);
+    }, []);
     useEffect(() => {
       return () => {
         layer && layer.remove();
       };
     }, []);
     useEffect(() => {
-      const t = type === "fillExtrusion" ? "fill-extrusion" : type;
       const l = layer.clone({
-        type: t as ILayer["type"],
         metadata,
         minzoom,
         maxzoom,
