@@ -26,6 +26,9 @@
   "bugs": {
     "url": "https://github.com/zxeryu/mapbox-start/issues"
   },
+  "peerDependencies": {
+    "uuid": "^8.3.1"
+  },
   "dependencies": {
     "@types/mapbox-gl": "^1.12.5"
   }
