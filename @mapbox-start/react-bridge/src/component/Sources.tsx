@@ -1,8 +1,8 @@
 import React, { createContext, ReactNode, useContext, useEffect, useMemo } from "react";
 import { useMap } from "../Map";
-import { MapSourceOptions, Source } from "../Source";
+import { MapSource, Source } from "../Source";
 
-const SpecSourceContext = createContext<{ source: Source<keyof MapSourceOptions> }>({} as any);
+const SpecSourceContext = createContext<{ source: Source<keyof MapSource> }>({} as any);
 
 export const useSpecSource = () => useContext(SpecSourceContext).source;
 
@@ -11,70 +11,46 @@ interface ISource {
   id?: string;
 }
 
-export const SpecSourceVector = ({ children, id, ...opts }: ISource & MapSourceOptions["vector"]) => {
-  const map = useMap();
-  const source = useMemo(() => Source.from("vector", opts).named(id).addTo(map), []);
-
-  useEffect(() => {
-    return () => {
-      source && source.remove();
-    };
-  }, []);
-  return (
-    <SpecSourceContext.Provider key={source.id} value={{ source }}>
-      {children}
-    </SpecSourceContext.Provider>
-  );
+const createSource = <T extends keyof MapSource>(type: T) => {
+  return ({ children, id, ...opts }: ISource & MapSource[T]["option"]) => {
+    const map = useMap();
+    const source = useMemo(() => Source.from(type, opts).named(id).addTo(map), []);
+    useEffect(() => {
+      return () => {
+        source && source.remove();
+      };
+    }, []);
+    return (
+      <SpecSourceContext.Provider key={source.id} value={{ source }}>
+        {children}
+      </SpecSourceContext.Provider>
+    );
+  };
 };
 
-export const SpecSourceGeoJson = ({ children, id, ...opts }: ISource & MapSourceOptions["geojson"]) => {
-  const map = useMap();
-  const source = useMemo(() => Source.from("geojson", opts).named(id).addTo(map), []);
+const SourceGeoJson = createSource("geojson");
+const SourceGeoJsonSubData = ({ data }: { data: MapSource["geojson"]["option"]["data"] }) => {
+  const source = useSpecSource();
   useEffect(() => {
-    return () => {
-      source && source.remove();
-    };
-  }, []);
-  useEffect(() => {
-    const s = source.get();
-    if (s && opts.data) {
-      s.setData(opts.data);
+    const s = source.get() as MapSource["geojson"]["impl"];
+    if (s && data) {
+      s.setData(data);
     }
-  }, [opts.data]);
-
-  return (
-    <SpecSourceContext.Provider key={source.id} value={{ source }}>
-      {children}
-    </SpecSourceContext.Provider>
-  );
+  }, [data]);
+  return null;
 };
 
-export const SpecSourceImage = ({ children, id, ...opts }: ISource & MapSourceOptions["image"]) => {
-  const map = useMap();
-  const source = useMemo(() => Source.from("image", opts).named(id).addTo(map), []);
-  useEffect(() => {
-    return () => {
-      source && source.remove();
-    };
-  }, []);
+export const SpecSourceGeoJson = ({ children, id, ...opts }: ISource & MapSource["geojson"]["option"]) => {
   return (
-    <SpecSourceContext.Provider key={source.id} value={{ source }}>
+    <SourceGeoJson id={id} {...opts}>
+      <SourceGeoJsonSubData data={opts.data} />
       {children}
-    </SpecSourceContext.Provider>
+    </SourceGeoJson>
   );
 };
-
-export const SpecSourceCanvas = ({ children, id, ...opts }: ISource & MapSourceOptions["canvas"]) => {
-  const map = useMap();
-  const source = useMemo(() => Source.from("canvas", opts).named(id).addTo(map), []);
-  useEffect(() => {
-    return () => {
-      source && source.remove();
-    };
-  }, []);
-  return (
-    <SpecSourceContext.Provider key={source.id} value={{ source }}>
-      {children}
-    </SpecSourceContext.Provider>
-  );
-};
+export const SpecSourceVector = createSource("vector");
+export const SpecSourceImage = createSource("image");
+export const SpecSourceCanvas = createSource("canvas");
+export const SpecSourceRaster = createSource("raster");
+export const SpecSourceRasterDem = createSource("rasterDem");
+export const SpecSourceVideo = createSource("video");

@@ -13,7 +13,9 @@ export const Control = ({
 }) => {
   const map = useMap();
   const portalNode = useMemo(() => {
-    return document.createElement("div");
+    const el = document.createElement("div");
+    el.classList.add("mapboxgl-ctrl", "mapboxgl-ctrl-row");
+    return el;
   }, []);
   useEffect(() => {
     const ctrl: IControl = {
