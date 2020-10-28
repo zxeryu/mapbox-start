@@ -1,11 +1,14 @@
-import React, { useMemo } from "react";
+import React, { useState } from "react";
 import {
   MapboxGL,
   SpecLayerCircle,
+  SpecLayerEvent,
+  SpecLayerHoverCursorToggle,
   SpecMap,
   SpecMarker,
   SpecPopup,
   SpecSourceGeoJson,
+  TopLeftContainer,
 } from "@mapbox-start/react-bridge";
 import { point, featureCollection } from "@turf/turf";
 
@@ -34,18 +37,42 @@ const PopupTest = () => {
   );
 };
 
+const pointsOne = [point([-5, 0], { name: "111" }), point([-5, 2], { name: "222" })];
+const pointsTwo = [point([-7, 0], { name: "111" }), point([-7, 2], { name: "222" })];
+
 const SourceLayerTest = () => {
-  const data = useMemo(() => [point([-5, 0]), point([-5, 2])], []);
+  const [points, setPoints] = useState(pointsOne);
+
   return (
-    <SpecSourceGeoJson data={featureCollection(data) as any}>
-      <SpecLayerCircle id={"zhaoxi"} paint={{ "circle-color": "black", "circle-radius": 6 }} />
-    </SpecSourceGeoJson>
+    <TopLeftContainer>
+      <div>
+        <button
+          onClick={() => {
+            setPoints((prevState) => (prevState === pointsOne ? pointsTwo : pointsOne));
+          }}>
+          change geojson data
+        </button>
+        <SpecSourceGeoJson data={featureCollection(points) as any}>
+          <SpecLayerCircle id={"zhaoxi"} paint={{ "circle-color": "black", "circle-radius": 6 }}>
+            <SpecLayerHoverCursorToggle />
+            <SpecLayerEvent
+              eventName={"click"}
+              listener={(e) => {
+                if (e.features && e.features[0]) {
+                  console.log("----layer click----", e.features[0].properties);
+                }
+              }}
+            />
+          </SpecLayerCircle>
+        </SpecSourceGeoJson>
+      </div>
+    </TopLeftContainer>
   );
 };
 
 export const MapDemo = () => {
   return (
-    <SpecMap style={"mapbox://styles/mapbox/streets-v11"} divStyle={{ backgroundColor: "pink", height: "90vh" }}>
+    <SpecMap style={"mapbox://styles/mapbox/streets-v11"} divStyle={{ backgroundColor: "pink", height: "100vh" }}>
       <MarkerTest />
       <PopupTest />
       <SourceLayerTest />
