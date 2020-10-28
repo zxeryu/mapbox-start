@@ -25,6 +25,7 @@ const expr = <TReturn>(name: string, ...args: any[]) => {
 };
 
 export const Ex = {
+  /*************************************** Types ********************************************/
   array<T = any>(value: TArg<T>, type?: "string" | "number" | "boolean") {
     if (type) {
       return expr<T[]>("array", type, value);
@@ -34,38 +35,6 @@ export const Ex = {
 
   boolean(value: TArg, ...fallbacks: TArg[]) {
     return expr<boolean>("boolean", value, ...fallbacks);
-  },
-
-  number(value: TArg, ...fallbacks: TArg[]) {
-    return expr<number>("number", value, ...fallbacks);
-  },
-
-  string(value: TArg, ...fallbacks: TArg[]) {
-    return expr<string>("string", value, ...fallbacks);
-  },
-
-  object(value: TArg, ...fallbacks: TArg[]) {
-    return expr<object>("object", value, ...fallbacks);
-  },
-
-  toBoolean(value: TArg) {
-    return expr<boolean>("to-boolean", value);
-  },
-
-  toString(value: TArg) {
-    return expr<string>("to-string", value);
-  },
-
-  toNumber(value: TArg, ...fallbacks: TArg[]) {
-    return expr<number>("to-number", value, ...fallbacks);
-  },
-
-  toColor(value: TArg, ...fallbacks: TArg[]) {
-    return expr<TColor>("to-color", value, ...fallbacks);
-  },
-
-  typeof(value: TArg) {
-    return expr<string>("typeof", value);
   },
 
   collator({
@@ -84,12 +53,60 @@ export const Ex = {
     });
   },
 
-  format(...formats: Array<[string, { "font-scale": number; "text-font": Array<string> }]>) {
+  format(...formats: Array<[string, { "font-scale": number; "text-font": Array<string>; "text-color": string }]>) {
     return expr<TFormatted>("format", ...flatten(formats));
+  },
+
+  image(value: TArg) {
+    return expr<string>("image", value);
   },
 
   literal<T extends any[] | object>(arg: TArg<T>) {
     return expr<T>("literal", arg);
+  },
+
+  number(value: TArg, ...fallbacks: TArg[]) {
+    return expr<number>("number", value, ...fallbacks);
+  },
+
+  numberFormat(
+    input: number,
+    options: { locale: string; currency: string; "min-fraction-digits": number; "max-fraction-digits": number },
+  ) {
+    return expr<string>("number-format", input, options);
+  },
+
+  object(value: TArg, ...fallbacks: TArg[]) {
+    return expr<object>("object", value, ...fallbacks);
+  },
+
+  string(value: TArg, ...fallbacks: TArg[]) {
+    return expr<string>("string", value, ...fallbacks);
+  },
+
+  toBoolean(value: TArg) {
+    return expr<boolean>("to-boolean", value);
+  },
+
+  toColor(value: TArg, ...fallbacks: TArg[]) {
+    return expr<TColor>("to-color", value, ...fallbacks);
+  },
+
+  toNumber(value: TArg, ...fallbacks: TArg[]) {
+    return expr<number>("to-number", value, ...fallbacks);
+  },
+
+  toString(value: TArg) {
+    return expr<string>("to-string", value);
+  },
+
+  typeof(value: TArg) {
+    return expr<string>("typeof", value);
+  },
+  /*************************************** Feature data ********************************************/
+
+  accumulated<T = any>() {
+    return expr<T>("accumulated");
   },
 
   featureState<T = any>(name: string) {
@@ -113,22 +130,37 @@ export const Ex = {
   properties() {
     return expr<object>("properties");
   },
+  /*************************************** Lookup ********************************************/
 
   at<T = any>(idx: TArg<number>, arr: TArg<T[]>) {
     return expr<T>("at", idx, arr);
   },
 
-  get<TObject extends object = any, TKey extends keyof TObject = keyof TObject>(name: TArg<TKey>) {
-    return expr<TObject[TKey]>("get", name);
+  get<TObject extends object = any, TKey extends keyof TObject = keyof TObject>(name: TArg<TKey>, obj?: TArg<TObject>) {
+    return expr<TObject[TKey]>("get", name, obj);
   },
 
-  has<TObject extends object = any, TKey extends keyof TObject = keyof TObject>(name: TArg<TKey>) {
-    return expr<boolean>("has", name);
+  has<TObject extends object = any, TKey extends keyof TObject = keyof TObject>(name: TArg<TKey>, obj?: TArg<TObject>) {
+    return expr<boolean>("has", name, obj);
+  },
+
+  in(keyword: boolean | string | number, input: TArg<string | string[] | boolean[] | number[]>) {
+    return expr<boolean>("in", keyword, input);
+  },
+
+  indexOf(keyword: boolean | string | number, input: TArg<string | string[] | boolean[] | number[]>, index?: number) {
+    return expr<number>("index-of", keyword, input, index);
   },
 
   length(target: TArg<string> | TArg<any[]> | TArg) {
     return expr<number>("length", target);
   },
+
+  slice<T = any>(input: TArg<string> | TArg<T[]>, start: number, end?: number) {
+    return expr<T[] | string>("slice", input, start, end);
+  },
+
+  /*************************************** Decision ********************************************/
 
   not(bool: TArg<boolean>) {
     return expr<boolean>("!", bool);
@@ -144,10 +176,6 @@ export const Ex = {
 
   lte(a: TArg, b: TArg, collator?: TCollator) {
     return expr<boolean>("<=", a, b, collator);
-  },
-
-  in<T = any>(a: TArg<T>, b: TArg<T | T[]>) {
-    return expr<boolean>("in", a, b);
   },
 
   eq<T = any>(a: TArg<T>, b: TArg<T>, collator?: TCollator) {
@@ -186,15 +214,63 @@ export const Ex = {
     return expr<TOutput>("match", input, ...flatten(labels), defaultOutput);
   },
 
+  within(object: TArg<object>) {
+    return expr<boolean>("within", object);
+  },
+
+  /*************************************** Ramps, scales, curves ********************************************/
+
+  /**
+   *
+   * @param interpolation  ["linear"] | ["exponential", base] | ["cubic-bezier", x1, y1, x2, y2],
+   * @param input number
+   * @param stops [stop_input_1: number, stop_output_1: OutputType]
+   */
+  interpolate<TOutput = number | TColor>(
+    interpolation: TArg<TInterpolation>,
+    input: TArg<number>,
+    ...stops: Array<[TArg<number>, TOutput]>
+  ) {
+    return expr<TOutput>("interpolate", interpolation, input, ...flatten(stops));
+  },
+
+  step<TOutput = number | TColor>(
+    input: TArg<number>,
+    defaultOutput: TOutput,
+    ...stops: Array<[TArg<number>, TOutput]>
+  ) {
+    return expr<TOutput>("step", input, defaultOutput, ...flatten(stops));
+  },
+
+  interpolateHcl(interpolation: TInterpolation, input: TArg<number>, ...stops: Array<[TArg<number>, TColor]>) {
+    return expr<TColor>("interpolate-hcl", interpolation, input, ...flatten(stops));
+  },
+
+  interpolateLab(interpolation: TInterpolation, input: TArg<number>, ...stops: Array<[TArg<number>, TColor]>) {
+    return expr<TColor>("interpolate-lab", interpolation, input, ...flatten(stops));
+  },
+
+  /*************************************** Variable binding ********************************************/
+
+  let<T>(exps: Array<[TArg<string>, TArg]>, out: TArg) {
+    return expr<T>("let", ...flatten(exps), out);
+  },
+
+  var<T>(name: string) {
+    return expr<T>("var", name);
+  },
+
+  /*************************************** String ********************************************/
+
   concat(arg1: TArg, arg2: TArg, ...args: TArg[]) {
     return expr<string>("concat", arg1, arg2, ...args);
   },
 
-  downcase(arg: TArg<string>) {
+  downCase(arg: TArg<string>) {
     return expr<string>("downcase", arg);
   },
 
-  upcase(arg: TArg<string>) {
+  upCase(arg: TArg<string>) {
     return expr<string>("upcase", arg);
   },
 
@@ -205,6 +281,8 @@ export const Ex = {
   resolvedLocale(arg: TArg<TCollator>) {
     return expr<string>("resolved-locale", arg);
   },
+
+  /*************************************** Color ********************************************/
 
   rgb(r: TArg<number>, g: TArg<number>, b: TArg<number>) {
     return expr<TColor>("rgb", r, g, b);
@@ -217,6 +295,8 @@ export const Ex = {
   toRgba(color: TArg<TColor>) {
     return expr<[number, number, number, number]>("to-rgba", color);
   },
+
+  /*************************************** Math ********************************************/
 
   sum(a: TArg<number>, b: TArg<number>, ...args: TArg<number>[]) {
     return expr<number>("+", a, b, ...args);
@@ -330,33 +410,13 @@ export const Ex = {
     return expr<TInterpolation>("cubic-bezier", x1, y1, x2, y2);
   },
 
-  interpolate<TOutput = number | TColor>(
-    interpolation: TArg<TInterpolation>,
-    input: TArg<number>,
-    ...stops: Array<[TArg<number>, TOutput]>
-  ) {
-    return expr<TOutput>("interpolate", interpolation, input, ...flatten(stops));
-  },
-
-  step<TOutput = number | TColor>(
-    input: TArg<number>,
-    defaultOutput: TOutput,
-    ...stops: Array<[TArg<number>, TOutput]>
-  ) {
-    return expr<TOutput>("step", input, defaultOutput, ...flatten(stops));
-  },
-
-  interpolateHcl(interpolation: TInterpolation, input: TArg<number>, ...stops: Array<[TArg<number>, TColor]>) {
-    return expr<TColor>("interpolate-hcl", interpolation, input, ...flatten(stops));
-  },
-
-  interpolateLab(interpolation: TInterpolation, input: TArg<number>, ...stops: Array<[TArg<number>, TColor]>) {
-    return expr<TColor>("interpolate-lab", interpolation, input, ...flatten(stops));
-  },
+  /*************************************** Zoom ********************************************/
 
   zoom() {
     return expr<number>("zoom");
   },
+
+  /*************************************** Heatmap ********************************************/
 
   heatmapDensity() {
     return expr<number>("heatmap-density");
