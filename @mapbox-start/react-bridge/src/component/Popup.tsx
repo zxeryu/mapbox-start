@@ -1,15 +1,16 @@
-import React, { createContext, ReactNode, useContext, useEffect, useMemo, useRef } from "react";
+import React, { createContext, ReactNode, useContext, useEffect, useMemo } from "react";
 import { MapboxGL, useMap } from "../Map";
-import { LngLatLike, PopupOptions } from "mapbox-gl";
+import { LngLatLike, PopupOptions, Popup } from "mapbox-gl";
+import { createPortal } from "react-dom";
 
 const PopupContext = createContext<{
-  popup?: typeof MapboxGL.Popup;
+  popup: Popup;
 }>({} as any);
 
-export const usePopup = () => useContext(PopupContext);
+export const useSpecPopup = () => useContext(PopupContext);
 
 export interface IPopup extends PopupOptions {
-  lngLat: LngLatLike;
+  lngLat?: LngLatLike;
   children: ReactNode;
   onClose?: () => void;
   onOpen?: () => void;
@@ -17,19 +18,20 @@ export interface IPopup extends PopupOptions {
 
 export const SpecPopup = ({ children, lngLat, onOpen, onClose, ...options }: IPopup) => {
   const map = useMap();
-  const ref = useRef<HTMLDivElement>(null);
-  const popup = useMemo(() => {
-    return new MapboxGL.Popup({ ...options });
+  const { popup, $mount } = useMemo(() => {
+    const $mount = document.createElement("div");
+    return { popup: new MapboxGL.Popup({ ...options }), $mount };
   }, []);
   useEffect(() => {
-    if (ref.current) {
-      popup.setDOMContent(ref.current);
-    }
-    popup.setLngLat(lngLat);
+    popup.setDOMContent($mount);
     popup.addTo(map);
     return () => {
       popup.remove();
     };
+  }, []);
+
+  useEffect(() => {
+    lngLat && popup.setLngLat(lngLat);
   }, [lngLat]);
 
   useEffect(() => {
@@ -47,9 +49,5 @@ export const SpecPopup = ({ children, lngLat, onOpen, onClose, ...options }: IPo
     };
   }, []);
 
-  return (
-    <div ref={ref}>
-      <PopupContext.Provider value={{ popup: popup as any }}>{children}</PopupContext.Provider>
-    </div>
-  );
+  return createPortal(<PopupContext.Provider value={{ popup: popup }}>{children}</PopupContext.Provider>, $mount);
 };

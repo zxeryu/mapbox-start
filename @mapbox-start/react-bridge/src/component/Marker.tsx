@@ -1,48 +1,46 @@
-import React, { createContext, ReactNode, useContext, useEffect, useRef, useState } from "react";
-import { LngLatLike, MarkerOptions } from "mapbox-gl";
+import React, { createContext, ReactNode, useContext, useEffect, useMemo } from "react";
+import { LngLatLike, MarkerOptions, Marker } from "mapbox-gl";
 import { MapboxGL, useMap } from "../Map";
+import { createPortal } from "react-dom";
 
 const MarkerContext = createContext<{
-  marker?: typeof MapboxGL.Marker;
+  marker: Marker;
 }>({} as any);
 
-export const useMarker = () => useContext(MarkerContext).marker;
+export const useSpecMarker = () => useContext(MarkerContext).marker;
 
 export interface IMarker extends Omit<MarkerOptions, "element"> {
   lngLat: LngLatLike;
   children?: ReactNode;
+  original?: boolean;
 }
 
-export const SpecMarker = ({ children, lngLat, ...options }: IMarker) => {
+export const SpecMarker = ({ children, lngLat, original = false, ...options }: IMarker) => {
   const map = useMap();
-  const ref = useRef<HTMLDivElement>(null);
-  const [marker, setMarker] = useState<any>();
 
-  useEffect(() => {
-    if (!children) {
-      setMarker(new MapboxGL.Marker({ ...options }));
-    }
-    if (ref.current && children) {
-      setMarker(new MapboxGL.Marker(ref.current, { ...options }));
+  const { marker, $mount } = useMemo(() => {
+    if (!original && children) {
+      const $mount = document.createElement("div");
+      return { marker: new MapboxGL.Marker($mount, { ...options }), $mount };
+    } else {
+      return { marker: new MapboxGL.Marker({ ...options }) };
     }
   }, []);
 
   useEffect(() => {
-    if (!marker) return;
-    marker.setLngLat(lngLat);
+    lngLat && marker.setLngLat(lngLat);
+  }, [lngLat]);
+
+  useEffect(() => {
     marker.addTo(map);
     return () => {
       marker && marker.remove();
     };
-  }, [marker, lngLat]);
+  }, []);
 
-  if (!children) {
-    return null;
+  if ($mount) {
+    return createPortal(<MarkerContext.Provider value={{ marker }}>{children}</MarkerContext.Provider>, $mount);
   }
 
-  return (
-    <div ref={ref}>
-      <MarkerContext.Provider value={{ marker }}>{children}</MarkerContext.Provider>
-    </div>
-  );
+  return <MarkerContext.Provider value={{ marker }}>{children}</MarkerContext.Provider>;
 };
