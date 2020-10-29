@@ -2,6 +2,7 @@ import React, { createContext, ReactNode, useContext, useEffect, useMemo } from 
 import { LngLatLike, MarkerOptions, Marker } from "mapbox-gl";
 import { MapboxGL, useMap } from "../Map";
 import { createPortal } from "react-dom";
+import { useSpecPopup } from "./Popup";
 
 const MarkerContext = createContext<{
   marker: Marker;
@@ -17,6 +18,7 @@ export interface IMarker extends Omit<MarkerOptions, "element"> {
 
 export const SpecMarker = ({ children, lngLat, original = false, ...options }: IMarker) => {
   const map = useMap();
+  const popup = useSpecPopup();
 
   const { marker, $mount } = useMemo(() => {
     if (!original && children) {
@@ -37,6 +39,10 @@ export const SpecMarker = ({ children, lngLat, original = false, ...options }: I
       marker && marker.remove();
     };
   }, []);
+
+  useEffect(() => {
+    popup && marker.setPopup(popup);
+  }, [popup]);
 
   if ($mount) {
     return createPortal(<MarkerContext.Provider value={{ marker }}>{children}</MarkerContext.Provider>, $mount);

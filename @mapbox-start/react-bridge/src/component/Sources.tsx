@@ -40,7 +40,7 @@ const SourceGeoJsonSubData = ({ data }: { data: MapSource["geojson"]["option"]["
   return null;
 };
 
-export const SpecSourceGeoJson = ({ children, id, ...opts }: ISource & MapSource["geojson"]["option"]) => {
+export const SpecSourceGeoJSON = ({ children, id, ...opts }: ISource & MapSource["geojson"]["option"]) => {
   return (
     <SourceGeoJson id={id} {...opts}>
       <SourceGeoJsonSubData data={opts.data} />

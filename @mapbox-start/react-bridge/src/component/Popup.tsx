@@ -7,7 +7,7 @@ const PopupContext = createContext<{
   popup: Popup;
 }>({} as any);
 
-export const useSpecPopup = () => useContext(PopupContext);
+export const useSpecPopup = () => useContext(PopupContext).popup;
 
 export interface IPopup extends PopupOptions {
   lngLat?: LngLatLike;
