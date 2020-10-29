@@ -1,5 +1,5 @@
 import React, { createContext, ReactNode, useContext, useEffect, useMemo } from "react";
-import { LngLatLike, MarkerOptions, Marker } from "mapbox-gl";
+import { LngLatLike, MarkerOptions, Marker, MapboxEvent } from "mapbox-gl";
 import { MapboxGL, useMap } from "../Map";
 import { createPortal } from "react-dom";
 import { useSpecPopup } from "./Popup";
@@ -14,9 +14,20 @@ export interface IMarker extends Omit<MarkerOptions, "element"> {
   lngLat: LngLatLike;
   children?: ReactNode;
   original?: boolean;
+  onDrag?: (marker: Marker, e: MapboxEvent) => void;
+  onDragStart?: (marker: Marker, e: MapboxEvent) => void;
+  onDragEnd?: (marker: Marker, e: MapboxEvent) => void;
 }
 
-export const SpecMarker = ({ children, lngLat, original = false, ...options }: IMarker) => {
+export const SpecMarker = ({
+  children,
+  lngLat,
+  original = false,
+  onDrag,
+  onDragStart,
+  onDragEnd,
+  ...options
+}: IMarker) => {
   const map = useMap();
   const popup = useSpecPopup();
 
@@ -43,6 +54,21 @@ export const SpecMarker = ({ children, lngLat, original = false, ...options }: I
   useEffect(() => {
     popup && marker.setPopup(popup);
   }, [popup]);
+
+  useEffect(() => {
+    const handleDrag = (e: MapboxEvent) => onDrag && onDrag(marker, e);
+    const handleDragStart = (e: MapboxEvent) => onDragStart && onDragStart(marker, e);
+    const handleDragEnd = (e: MapboxEvent) => onDragEnd && onDragEnd(marker, e);
+
+    marker.on("drag", handleDrag);
+    marker.on("dragstart", handleDragStart);
+    marker.on("dragend", handleDragEnd);
+    return () => {
+      marker.off("drag", handleDrag);
+      marker.off("dragstart", handleDragStart);
+      marker.off("dragend", handleDragEnd);
+    };
+  }, []);
 
   if ($mount) {
     return createPortal(<MarkerContext.Provider value={{ marker }}>{children}</MarkerContext.Provider>, $mount);
