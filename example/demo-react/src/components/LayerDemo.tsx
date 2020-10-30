@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from "react";
+import React, { useCallback, useMemo, useState } from "react";
 import {
   SpecLayerCircle,
   SpecSourceGeoJSON,
@@ -12,9 +12,10 @@ import {
   SpecLayerFill,
   SpecLayerFillExtrusion,
   SpecLayerLine,
+  useMap,
 } from "@mapbox-start/react-bridge";
 import { featureCollection, point, circle, lineString, lineToPolygon } from "@turf/turf";
-import { CheckControl } from "../MapDemo";
+import { backHome, CheckControl } from "../MapDemo";
 import { get } from "lodash";
 
 const LayerCircle = () => {
@@ -168,6 +169,31 @@ const LayerFillExtrusion = () => {
   );
 };
 
+const LayerFillExtrusion2 = () => {
+  const map = useMap();
+  const fly = useCallback((state: boolean) => {
+    if (state) {
+      map.flyTo({ center: [-87.61694, 41.86625], zoom: 15.99, animate: true });
+    } else {
+      backHome(map);
+    }
+  }, []);
+  return (
+    <CheckControl name={"fill-extrusion2"} defaultCheck={false} onChange={fly}>
+      <SpecSourceGeoJSON data={"https://docs.mapbox.com/mapbox-gl-js/assets/indoor-3d-map.geojson"}>
+        <SpecLayerFillExtrusion
+          paint={{
+            "fill-extrusion-color": Ex.get("color"),
+            "fill-extrusion-height": Ex.get("height"),
+            "fill-extrusion-base": Ex.get("base_height"),
+            "fill-extrusion-opacity": 0.5,
+          }}
+        />
+      </SpecSourceGeoJSON>
+    </CheckControl>
+  );
+};
+
 const LayerLine = () => {
   const data = useMemo(() => {
     const line = lineString([
@@ -210,6 +236,9 @@ export const LayerDemo = () => {
       <CheckControl name={"fill-extrusion"} defaultCheck={false}>
         <LayerFillExtrusion />
       </CheckControl>
+
+      <LayerFillExtrusion2 />
+
       <CheckControl name={"line"} defaultCheck={false}>
         <LayerLine />
       </CheckControl>
