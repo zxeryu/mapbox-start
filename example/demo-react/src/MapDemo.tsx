@@ -2,6 +2,7 @@ import React, { ReactNode, useState } from "react";
 import { MapboxGL, SpecMap, TopLeftContainer } from "@mapbox-start/react-bridge";
 import { MarkerDemo } from "./components/MarkerDemo";
 import { LayerDemo } from "./components/LayerDemo";
+import { SourceDemo } from "./components/SourceDemo";
 
 MapboxGL.accessToken = "pk.eyJ1IjoiZXJ5dSIsImEiOiJjazZybDNjbHEwNWY1M2Vtcnl3c3dqemNoIn0.GKMcdxRq_GrdMFmoUCXvYQ";
 
@@ -53,6 +54,9 @@ const Menu = () => {
         </Title>
         <Title title={"Layer"}>
           <LayerDemo />
+        </Title>
+        <Title title={"Source"}>
+          <SourceDemo />
         </Title>
       </div>
     </TopLeftContainer>

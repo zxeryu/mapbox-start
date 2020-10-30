@@ -143,5 +143,5 @@ export const SpecLayerLine = createLayer("line");
 export const SpecLayerSymbol = createLayer("symbol");
 export const SpecLayerRaster = createLayer("raster");
 export const SpecLayerCircle = createLayer("circle");
-export const SpecHeatmap = createLayer("heatmap");
-export const SpecHillShade = createLayer("hillshade");
+export const SpecLayerHeatmap = createLayer("heatmap");
+export const SpecLayerHillShade = createLayer("hillshade");
