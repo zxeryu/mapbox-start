@@ -1,0 +1,36 @@
+{
+  "name": "@mapbox-start/vue-bridge",
+  "version": "0.0.0",
+  "description": "> TODO: description",
+  "author": "zx <zxpstudy@163.com>",
+  "homepage": "https://github.com/zxeryu/mapbox-start#readme",
+  "license": "MIT",
+  "files": [
+    "dist/"
+  ],
+  "types": "dist/index.d.ts",
+  "main": "dist/index.js",
+  "module": "dist/index.es.js",
+  "publishConfig": {
+    "access": "public"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/zxeryu/mapbox-start.git"
+  },
+  "scripts": {
+    "test": "echo \"Error: run tests from root\" && exit 1"
+  },
+  "bugs": {
+    "url": "https://github.com/zxeryu/mapbox-start/issues"
+  },
+  "peerDependencies": {
+    "@babel/runtime-corejs3": "*",
+    "vue": "2.x",
+    "uuid": "8.x",
+    "lodash": "4.x"
+  },
+  "devDependencies": {
+    "@types/mapbox-gl": "^1.12.5"
+  }
+}
