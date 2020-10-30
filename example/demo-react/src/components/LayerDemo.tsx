@@ -9,8 +9,11 @@ import {
   SpecLayerSymbol,
   SpecPopup,
   IImageOpts,
+  SpecLayerFill,
+  SpecLayerFillExtrusion,
+  SpecLayerLine,
 } from "@mapbox-start/react-bridge";
-import { featureCollection, point } from "@turf/turf";
+import { featureCollection, point, circle, lineString, lineToPolygon } from "@turf/turf";
 import { CheckControl } from "../MapDemo";
 import { get } from "lodash";
 
@@ -134,6 +137,61 @@ const LayerSymbolIconUrl = () => {
   );
 };
 
+const LayerFill = () => {
+  const data = useMemo(() => circle([0, -11], 1000), []);
+  return (
+    <SpecSourceGeoJSON data={data}>
+      <SpecLayerFill paint={{ "fill-color": "red", "fill-opacity": 0.3 }} />
+    </SpecSourceGeoJSON>
+  );
+};
+
+const LayerFillExtrusion = () => {
+  const data = useMemo(
+    () => [
+      circle([0, -12], 30, { properties: { height: 200000 } }),
+      circle([2, -12], 30, { properties: { height: 400000 } }),
+      circle([4, -12], 30, { properties: { height: 800000 } }),
+    ],
+    [],
+  );
+  return (
+    <SpecSourceGeoJSON data={featureCollection(data)}>
+      <SpecLayerFillExtrusion
+        paint={{
+          "fill-extrusion-color": "red",
+          "fill-extrusion-opacity": 0.6,
+          "fill-extrusion-height": Ex.get("height"),
+        }}
+      />
+    </SpecSourceGeoJSON>
+  );
+};
+
+const LayerLine = () => {
+  const data = useMemo(() => {
+    const line = lineString([
+      [0, 0],
+      [8, 0],
+      [8, -12],
+      [0, -12],
+      [0, 0],
+    ]);
+    return lineToPolygon(line);
+  }, []);
+  return (
+    <SpecSourceGeoJSON data={data}>
+      <SpecLayerLine
+        paint={{
+          "line-width": 2,
+          "line-color": "red",
+          "line-dasharray": [2, 2],
+        }}
+      />
+    </SpecSourceGeoJSON>
+  );
+};
+
 export const LayerDemo = () => {
   return (
     <>
@@ -145,6 +203,15 @@ export const LayerDemo = () => {
       </CheckControl>
       <CheckControl name={"symbol & icon url"}>
         <LayerSymbolIconUrl />
+      </CheckControl>
+      <CheckControl name={"fill"} defaultCheck={false}>
+        <LayerFill />
+      </CheckControl>
+      <CheckControl name={"fill-extrusion"} defaultCheck={false}>
+        <LayerFillExtrusion />
+      </CheckControl>
+      <CheckControl name={"line"} defaultCheck={false}>
+        <LayerLine />
       </CheckControl>
     </>
   );
