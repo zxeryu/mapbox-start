@@ -32,7 +32,7 @@ export type MapSource = {
   };
   geojson: {
     impl: GeoJSONSource;
-    option: GeoJSONSourceOptions;
+    option: Omit<GeoJSONSourceOptions, "data"> & { data?: any };
   };
   image: {
     impl: ImageSource;

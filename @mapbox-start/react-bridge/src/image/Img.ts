@@ -1,6 +1,6 @@
 import { Map } from "mapbox-gl";
 import { createSDF, normalize, r } from "./sdf";
-import { svgToDataURL } from "./index";
+import { IImageOpts, svgToDataURL } from "./index";
 
 const loadImage = (url: string, size: number, shouldNormalize = false): Promise<HTMLImageElement> => {
   if (shouldNormalize) {
@@ -19,14 +19,6 @@ const loadImage = (url: string, size: number, shouldNormalize = false): Promise<
 
     img.src = url;
   });
-};
-
-export type IImageOpts = {
-  svg?: string;
-  url?: string;
-  size: number;
-  normalize?: boolean;
-  sdf?: boolean;
 };
 
 export const prepareImage = (opt: IImageOpts) => {

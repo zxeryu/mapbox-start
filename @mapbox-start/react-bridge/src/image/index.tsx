@@ -1,8 +1,18 @@
-import { map } from "lodash";
+import { map, template } from "lodash";
 import { lazy, ReactNode, Suspense, useMemo } from "react";
-import { IImageOpts, Img } from "./Img";
+import { Img } from "./Img";
 import { useMap } from "../Map";
 import React from "react";
+
+export const tagTemplate = (s: string) => {
+  return template(s, {
+    interpolate: /{{([\s\S]+?)}}/g,
+  });
+};
+
+export const svgFor = (svg: string, fill: string) => {
+  return tagTemplate(svg)({ fill });
+};
 
 export const svgToDataURL = (svg: string): string => {
   try {
@@ -11,6 +21,14 @@ export const svgToDataURL = (svg: string): string => {
     console.error(e, svg);
     return "";
   }
+};
+
+export type IImageOpts = {
+  svg?: string;
+  url?: string;
+  size: number;
+  normalize?: boolean;
+  sdf?: boolean;
 };
 
 export const NeedIcons = ({ icons, children }: { icons: { [name: string]: IImageOpts }; children?: ReactNode }) => {

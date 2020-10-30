@@ -1,4 +1,5 @@
 import { flatten, isUndefined } from "lodash";
+import { ExpressionName } from "mapbox-gl";
 
 export type TColor = string | number[];
 export type TCollator = any;
@@ -6,7 +7,7 @@ export type TInterpolation = any[];
 export type TFormatted = any[];
 export type TArg<T = any> = T | Expr<T>;
 
-export type Expr<TReturn = any> = any[] | TReturn[];
+export type Expr<TReturn = any> = [ExpressionName, ...TReturn[]];
 
 const expr = <TReturn>(name: string, ...args: any[]) => {
   const ret = [];
