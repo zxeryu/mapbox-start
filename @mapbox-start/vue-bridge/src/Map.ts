@@ -1,8 +1,15 @@
-import { Component, Prop, Vue } from "vue-property-decorator";
-import { FitBoundsOptions, LngLatBoundsLike, LngLatLike, TransformRequestFunction, Style } from "mapbox-gl";
+import { Component, Prop, Provide, Ref, Vue } from "vue-property-decorator";
+import M, { Map, FitBoundsOptions, LngLatBoundsLike, LngLatLike, TransformRequestFunction, Style } from "mapbox-gl";
+import { CreateElement, VNode } from "vue";
+import { get } from "lodash";
+
+let mapFromUser: typeof M | undefined;
+
+export const setMapboxGL = (m: typeof M) => (mapFromUser = m);
+export const MapboxGL: typeof M = window.mapboxgl || mapFromUser;
 
 @Component
-class SpecMapProps extends Vue {
+class MapOptionProps extends Vue {
   //from mapbox
   @Prop() antialias?: boolean;
   @Prop() attributionControl?: boolean;
@@ -38,7 +45,7 @@ class SpecMapProps extends Vue {
   @Prop() refreshExpiredTiles?: boolean;
   @Prop() renderWorldCopies?: boolean;
   @Prop() scrollZoom?: boolean;
-  @Prop() style?: Style | string;
+  @Prop() mapStyle?: Style | string;
   @Prop() trackResize?: boolean;
   @Prop() transformRequest?: TransformRequestFunction;
   @Prop() touchZoomRotate?: boolean;
@@ -50,4 +57,56 @@ class SpecMapProps extends Vue {
 }
 
 @Component
-export class SpecMap extends SpecMapProps {}
+class MapProvide extends Vue {
+  @Prop() map!: Map;
+
+  @Provide("map") p: Map = get(this.$options.propsData, "map");
+
+  render(createElement: CreateElement): VNode {
+    return createElement("div", this.$slots.default);
+  }
+}
+
+@Component
+export class SpecMap extends MapOptionProps {
+  @Ref("mapDiv") mapDiv!: HTMLDivElement;
+
+  private map: Map | undefined;
+  private isMapLoaded!: boolean;
+
+  data(): object {
+    return {
+      map: undefined,
+      isMapLoaded: false,
+    };
+  }
+
+  mounted() {
+    if (this.mapDiv && !this.map) {
+      this.map = new MapboxGL.Map({ ...this.$options.propsData, container: this.mapDiv, style: this.mapStyle });
+      this.map.once("load", () => {
+        this.isMapLoaded = true;
+      });
+    }
+  }
+
+  render(createElement: CreateElement): VNode {
+    return createElement(
+      "div",
+      { ref: "mapDiv" },
+      this.map && this.isMapLoaded
+        ? [
+            createElement(
+              MapProvide,
+              {
+                props: {
+                  map: this.map,
+                },
+              },
+              this.$slots.default,
+            ),
+          ]
+        : undefined,
+    );
+  }
+}
