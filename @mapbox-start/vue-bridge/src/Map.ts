@@ -2,6 +2,7 @@ import { Component, Prop, Provide, Ref, Vue } from "vue-property-decorator";
 import M, { Map, FitBoundsOptions, LngLatBoundsLike, LngLatLike, TransformRequestFunction, Style } from "mapbox-gl";
 import { CreateElement, VNode } from "vue";
 import { get } from "lodash";
+import { Provider } from "./core";
 
 let mapFromUser: typeof M | undefined;
 
@@ -57,10 +58,8 @@ class MapOptionProps extends Vue {
 }
 
 @Component
-class MapProvide extends Vue {
-  @Prop() map!: Map;
-
-  @Provide("map") p: Map = get(this.$options.propsData, "map");
+class MapProvide extends Provider<Map> {
+  @Provide("map") p: Map = get(this.$options.propsData, "value");
 
   render(createElement: CreateElement): VNode {
     return createElement("div", this.$slots.default);
@@ -100,7 +99,7 @@ export class SpecMap extends MapOptionProps {
               MapProvide,
               {
                 props: {
-                  map: this.map,
+                  value: this.map,
                 },
               },
               this.$slots.default,

@@ -3,18 +3,13 @@ import { CreateElement, VNode } from "vue";
 import { Alignment, Anchor, PointLike, Marker, LngLatLike, MapboxEvent, Map, Popup } from "mapbox-gl";
 import { MapboxGL } from "../Map";
 import { pick, get } from "lodash";
+import { Provider } from "../core";
 
 const MarkerOptionKeys = ["offset", "anchor", "draggable", "rotation", "rotationAlignment", "pitchAlignment", "scale"];
 
 @Component
-class MarkerProvide extends Vue {
-  @Prop() marker!: Marker;
-
-  @Provide("marker") p: Marker = get(this.$options.propsData, "marker");
-
-  render(createElement: CreateElement): VNode {
-    return createElement("div", this.$slots.default);
-  }
+class MarkerProvide extends Provider<Marker> {
+  @Provide("marker") p: Marker = get(this.$options.propsData, "value");
 }
 
 @Component
@@ -84,6 +79,16 @@ export class SpecMarker extends Vue {
   }
 
   render(createElement: CreateElement): VNode {
-    return createElement("div", { ref: "markerDiv" }, [createElement(MarkerProvide, this.$slots.default)]);
+    return createElement("div", { ref: "markerDiv" }, [
+      createElement(
+        MarkerProvide,
+        {
+          props: {
+            value: this.marker,
+          },
+        },
+        this.$slots.default,
+      ),
+    ]);
   }
 }

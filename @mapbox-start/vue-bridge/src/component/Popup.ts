@@ -4,16 +4,11 @@ import { pick } from "lodash";
 import { MapboxGL } from "../Map";
 import { CreateElement, VNode } from "vue";
 import { get } from "lodash";
+import { Provider } from "../core";
 
 @Component
-class PopupProvide extends Vue {
-  @Prop() popup!: Popup;
-
-  @Provide("popup") p: Popup = get(this.$options.propsData, "popup");
-
-  render(createElement: CreateElement): VNode {
-    return createElement("div", this.$slots.default);
-  }
+class PopupProvide extends Provider<Popup> {
+  @Provide("popup") p: Popup = get(this.$options.propsData, "value");
 }
 
 @Component
@@ -73,6 +68,16 @@ export class SpecPopup extends Vue {
   }
 
   render(createElement: CreateElement): VNode {
-    return createElement("div", { ref: "popupDiv" }, [createElement(PopupProvide, this.$slots.default)]);
+    return createElement("div", { ref: "popupDiv" }, [
+      createElement(
+        PopupProvide,
+        {
+          props: {
+            value: this.popup,
+          },
+        },
+        this.$slots.default,
+      ),
+    ]);
   }
 }
