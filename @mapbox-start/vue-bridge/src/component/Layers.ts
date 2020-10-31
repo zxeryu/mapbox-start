@@ -1,4 +1,4 @@
-import { Vue, Component, Provide, Inject, Watch } from "vue-property-decorator";
+import { Vue, Component, Provide, Inject, Watch, Prop } from "vue-property-decorator";
 import {
   BackgroundLayout,
   BackgroundPaint,
@@ -20,6 +20,7 @@ import {
   RasterPaint,
   SymbolLayout,
   SymbolPaint,
+  Layer as ILayer,
 } from "mapbox-gl";
 import { CreateElement, VNode } from "vue";
 import { Provider } from "../core";
@@ -71,35 +72,37 @@ type MapLayerLP = {
   };
 };
 
-type TType = keyof MapLayerLP;
-
 @Component
 class SpecLayer<T extends keyof MapLayerLP> extends Vue {
-  id?: string;
-  sourceLayer?: string;
-  layerRef?: string;
-  paint?: MapLayerLP[T]["paint"];
-  layout?: MapLayerLP[T]["layout"];
-  metadata?: any;
-  minzoom?: number;
-  maxzoom?: number;
-  interactive?: boolean;
-  filter?: any[];
-  before?: string;
+  @Prop() id?: string;
+  @Prop() sourceLayer?: string;
+  @Prop() layerRef?: string;
+  @Prop() paint?: MapLayerLP[T]["paint"];
+  @Prop() layout?: MapLayerLP[T]["layout"];
+  @Prop() metadata?: any;
+  @Prop() minzoom?: number;
+  @Prop() maxzoom?: number;
+  @Prop() interactive?: boolean;
+  @Prop() filter?: any[];
+  @Prop() before?: string;
 
   @Inject() map!: Map;
-  @Inject() source!: Source<any>;
+  @Inject("source") source!: Source<any>;
 
-  protected type!: TType;
+  protected type!: T;
 
   private layer: Layer | undefined;
+
+  data(): object {
+    return { layer: undefined };
+  }
 
   mounted() {
     const t = this.type === "fillExtrusion" ? "fill-extrusion" : this.type;
     this.layer = Layer.from(this.source, this.sourceLayer)
       .named(this.id)
       .clone({
-        type: t,
+        type: t as ILayer["type"],
         metadata: this.metadata,
         minzoom: this.minzoom,
         maxzoom: this.maxzoom,
@@ -133,51 +136,54 @@ class SpecLayer<T extends keyof MapLayerLP> extends Vue {
   }
 
   render(createElement: CreateElement): VNode {
-    return createElement("div", createElement(LayerProvide, { props: { value: this.layer } }, this.$slots.default));
+    return createElement(
+      "div",
+      this.layer ? [createElement(LayerProvide, { props: { value: this.layer } }, this.$slots.default)] : undefined,
+    );
   }
 }
 
 @Component
 export class SpecLayerBackground extends SpecLayer<"background"> {
-  type: TType = "background";
+  type: "background" = "background";
 }
 
 @Component
 export class SpecLayerFill extends SpecLayer<"fill"> {
-  type: TType = "fill";
+  type: "fill" = "fill";
 }
 
 @Component
 export class SpecLayerFillExtrusion extends SpecLayer<"fillExtrusion"> {
-  type: TType = "fillExtrusion";
+  type: "fillExtrusion" = "fillExtrusion";
 }
 
 @Component
 export class SpecLayerLine extends SpecLayer<"line"> {
-  type: TType = "line";
+  type: "line" = "line";
 }
 
 @Component
 export class SpecLayerSymbol extends SpecLayer<"symbol"> {
-  type: TType = "symbol";
+  type: "symbol" = "symbol";
 }
 
 @Component
 export class SpecLayerRaster extends SpecLayer<"raster"> {
-  type: TType = "raster";
+  type: "raster" = "raster";
 }
 
 @Component
 export class SpecLayerCircle extends SpecLayer<"circle"> {
-  type: TType = "circle";
+  type: "circle" = "circle";
 }
 
 @Component
 export class SpecLayerHeatmap extends SpecLayer<"heatmap"> {
-  type: TType = "heatmap";
+  type: "heatmap" = "heatmap";
 }
 
 @Component
 export class SpecLayerHillShade extends SpecLayer<"hillshade"> {
-  type: TType = "hillshade";
+  type: "hillshade" = "hillshade";
 }

@@ -32,6 +32,12 @@ export class SpecPopup extends Vue {
 
   private popup: Popup | undefined;
 
+  data(): object {
+    return {
+      popup: undefined,
+    };
+  }
+
   mounted() {
     this.popup = new MapboxGL.Popup(
       pick(this.$options.propsData, [
@@ -68,16 +74,22 @@ export class SpecPopup extends Vue {
   }
 
   render(createElement: CreateElement): VNode {
-    return createElement("div", { ref: "popupDiv" }, [
-      createElement(
-        PopupProvide,
-        {
-          props: {
-            value: this.popup,
-          },
-        },
-        this.$slots.default,
-      ),
-    ]);
+    return createElement(
+      "div",
+      { ref: "popupDiv" },
+      this.popup
+        ? [
+            createElement(
+              PopupProvide,
+              {
+                props: {
+                  value: this.popup,
+                },
+              },
+              this.$slots.default,
+            ),
+          ]
+        : undefined,
+    );
   }
 }

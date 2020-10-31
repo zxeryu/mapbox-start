@@ -23,17 +23,21 @@ export class SpecEvent extends Empty {
 @Component
 export class SpecLayerEvent extends Empty {
   @Prop() eventName!: keyof MapLayerEventType;
-  @Prop() listener!: (ev: any) => void;
+  @Prop() listener?: (ev: any) => void;
 
   @Inject() map!: Map;
   @Inject() layer!: Layer;
 
   mounted() {
-    this.map.on(this.eventName, this.layer.id, this.listener);
+    this.map.on(this.eventName, this.layer.id, this.handleEvent);
   }
 
   beforeDestroy() {
-    this.map.off(this.eventName, this.layer.id, this.listener);
+    this.map.off(this.eventName, this.layer.id, this.handleEvent);
+  }
+
+  handleEvent(ev: any) {
+    this.listener && this.listener(ev);
   }
 }
 
@@ -45,12 +49,12 @@ export class SpecLayerHoverCursorToggle extends Empty {
   private hoveredFeatures: Dictionary<MapboxGeoJSONFeature> = {};
 
   mounted() {
-    this.map.on("mouseenter", this.handleEnter);
-    this.map.on("mouseleave", this.handleEnter);
+    this.map.on("mouseenter", this.layer.id, this.handleEnter);
+    this.map.on("mouseleave", this.layer.id, this.handleLeave);
   }
 
   beforeDestroy() {
-    this.map.off("mouseenter", this.handleLeave);
+    this.map.off("mouseenter", this.handleEnter);
     this.map.off("mouseleave", this.handleLeave);
   }
 

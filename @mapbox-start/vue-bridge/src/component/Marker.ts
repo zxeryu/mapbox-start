@@ -5,7 +5,16 @@ import { MapboxGL } from "../Map";
 import { pick, get } from "lodash";
 import { Provider } from "../core";
 
-const MarkerOptionKeys = ["offset", "anchor", "draggable", "rotation", "rotationAlignment", "pitchAlignment", "scale"];
+const MarkerOptionKeys = [
+  "offset",
+  "anchor",
+  "color",
+  "draggable",
+  "rotation",
+  "rotationAlignment",
+  "pitchAlignment",
+  "scale",
+];
 
 @Component
 class MarkerProvide extends Provider<Marker> {
@@ -17,6 +26,7 @@ export class SpecMarker extends Vue {
   //options
   @Prop() offset?: PointLike;
   @Prop() anchor?: Anchor;
+  @Prop() color?: string;
   @Prop() draggable?: boolean;
   @Prop() rotation?: number;
   @Prop() rotationAlignment?: Alignment;
@@ -30,11 +40,17 @@ export class SpecMarker extends Vue {
   @Prop() onDragEnd?: (marker: Marker, e: MapboxEvent) => void;
 
   @Inject() map!: Map;
-  @Inject() popup!: Popup;
+  @Inject() popup?: Popup;
 
   @Ref("markerDiv") markerDiv!: HTMLDivElement;
 
   private marker: Marker | undefined;
+
+  data(): object {
+    return {
+      marker: undefined,
+    };
+  }
 
   mounted() {
     if (this.original) {
@@ -79,16 +95,22 @@ export class SpecMarker extends Vue {
   }
 
   render(createElement: CreateElement): VNode {
-    return createElement("div", { ref: "markerDiv" }, [
-      createElement(
-        MarkerProvide,
-        {
-          props: {
-            value: this.marker,
-          },
-        },
-        this.$slots.default,
-      ),
-    ]);
+    return createElement(
+      "div",
+      { ref: "markerDiv" },
+      this.marker
+        ? [
+            createElement(
+              MarkerProvide,
+              {
+                props: {
+                  value: this.marker,
+                },
+              },
+              this.$slots.default,
+            ),
+          ]
+        : undefined,
+    );
   }
 }

@@ -5,11 +5,10 @@ import { CreateElement, VNode } from "vue";
 import { Provider } from "../core";
 import { get } from "lodash";
 
-class SourceProvide extends Provider<Source<keyof MapSource>> {
+@Component
+class SourceProvide extends Provider<Source<any>> {
   @Provide("source") p: Popup = get(this.$options.propsData, "value");
 }
-
-type TType = keyof MapSource;
 
 @Component
 class SpecSource<T extends keyof MapSource> extends Vue {
@@ -17,9 +16,15 @@ class SpecSource<T extends keyof MapSource> extends Vue {
 
   @Inject() map!: Map;
 
-  protected type!: TType;
+  protected type!: T;
 
-  protected source: Source<keyof MapSource> | undefined;
+  protected source: Source<T> | undefined;
+
+  data(): object {
+    return {
+      source: undefined,
+    };
+  }
 
   mounted() {
     this.source = Source.from(this.type, this.$options.propsData as MapSource[T]["option"])
@@ -32,12 +37,16 @@ class SpecSource<T extends keyof MapSource> extends Vue {
   }
 
   render(createElement: CreateElement): VNode {
-    return createElement("div", createElement(SourceProvide, { props: { value: this.source } }, this.$slots.default));
+    return createElement(
+      "div",
+      this.source ? [createElement(SourceProvide, { props: { value: this.source } }, this.$slots.default)] : undefined,
+    );
   }
 }
 
+@Component
 export class SpecSourceGeoJSON extends SpecSource<"geojson"> {
-  @Prop() data?: any;
+  @Prop() data: any;
   @Prop() maxzoom?: number;
   @Prop() attribution?: string;
   @Prop() buffer?: number;
@@ -52,7 +61,7 @@ export class SpecSourceGeoJSON extends SpecSource<"geojson"> {
   @Prop() promoteId?: PromoteIdSpecification;
   @Prop() filter?: any;
 
-  type: TType = "geojson";
+  type: "geojson" = "geojson";
 
   @Watch("data")
   onDataChange() {
@@ -75,14 +84,14 @@ export class SpecSourceVector extends SpecSource<"vector"> {
   @Prop() attribution?: string;
   @Prop() promoteId?: PromoteIdSpecification;
 
-  type: TType = "vector";
+  type: "vector" = "vector";
 }
 @Component
 export class SpecSourceImage extends SpecSource<"image"> {
   @Prop() url?: string;
   @Prop() coordinates?: number[][];
 
-  type: TType = "image";
+  type: "image" = "image";
 }
 @Component
 export class SpecSourceCanvas extends SpecSource<"canvas"> {
@@ -90,7 +99,7 @@ export class SpecSourceCanvas extends SpecSource<"canvas"> {
   @Prop() animate?: boolean;
   @Prop() canvas!: string | HTMLCanvasElement;
 
-  type: TType = "canvas";
+  type: "canvas" = "canvas";
 }
 @Component
 export class SpecSourceRaster extends SpecSource<"raster"> {
@@ -103,7 +112,7 @@ export class SpecSourceRaster extends SpecSource<"raster"> {
   @Prop() scheme?: "xyz" | "tms";
   @Prop() attribution?: string;
 
-  type: TType = "raster";
+  type: "raster" = "raster";
 }
 @Component
 export class SpecSourceRasterDem extends SpecSource<"rasterDem"> {
@@ -116,12 +125,12 @@ export class SpecSourceRasterDem extends SpecSource<"rasterDem"> {
   @Prop() attribution?: string;
   @Prop() encoding?: "terrarium" | "mapbox";
 
-  type: TType = "rasterDem";
+  type: "rasterDem" = "rasterDem";
 }
 @Component
 export class SpecSourceVideo extends SpecSource<"video"> {
   @Prop() urls?: string[];
   @Prop() coordinates?: number[][];
 
-  type: TType = "video";
+  type: "video" = "video";
 }
