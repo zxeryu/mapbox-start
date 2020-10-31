@@ -9,7 +9,6 @@ export const Control = ({
 }: {
   children?: ReactNode;
   position?: "top-right" | "top-left" | "bottom-right" | "bottom-left";
-  inline?: boolean;
 }) => {
   const map = useMap();
   const portalNode = useMemo(() => {
