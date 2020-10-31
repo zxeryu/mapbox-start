@@ -1,47 +1,33 @@
 <template>
   <div>
     <CheckControl name="circle & toggle && event && expression">
-      <SpecSourceGeoJSON :data="circlePoints">
-        <SpecLayerCircle
+      <spec-source-geo-json :data="circlePoints">
+        <spec-layer-circle
           :paint="{
             'circle-color': Ex.match(Ex.get('name'), 'black', ['111', 'red'], ['222', 'green'], ['333', 'blue']),
             'circle-radius': 6,
           }"
         >
-          <SpecLayerHoverCursorToggle />
-          <SpecLayerEvent eventName="click" :listener="onCircleClick" />
-          <SpecPopup v-if="circleItem" :key="circleItem.flag" :lngLat="circleItem.point">
+          <spec-layer-hover-cursor-toggle />
+          <spec-layer-event eventName="click" :listener="onCircleClick" />
+          <spec-popup v-if="circleItem" :key="circleItem.flag" :lngLat="circleItem.point">
             <div>{{ JSON.stringify(circleItem.props) }}</div>
-          </SpecPopup>
-        </SpecLayerCircle>
-      </SpecSourceGeoJSON>
+          </spec-popup>
+        </spec-layer-circle>
+      </spec-source-geo-json>
     </CheckControl>
   </div>
 </template>
 
 <script lang="ts">
 import { Vue, Component } from "vue-property-decorator";
-import CheckControl from "../CheckControl.vue";
 import { point, featureCollection } from "@turf/turf";
-import {
-  SpecSourceGeoJSON,
-  SpecLayerCircle,
-  SpecLayerHoverCursorToggle,
-  SpecLayerEvent,
-  SpecPopup,
-  Ex,
-} from "@mapbox-start/vue-bridge";
+import { Ex } from "@mapbox-start/vue-bridge";
 import { get } from "lodash";
+import CheckControl from "../CheckControl.vue";
 
 @Component({
-  components: {
-    CheckControl,
-    SpecSourceGeoJSON,
-    SpecLayerCircle,
-    SpecLayerHoverCursorToggle,
-    SpecLayerEvent,
-    SpecPopup,
-  },
+  components: { CheckControl },
 })
 export default class LayerDemo extends Vue {
   Ex = Ex;

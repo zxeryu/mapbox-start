@@ -1,21 +1,21 @@
 <template>
   <div>
     <CheckControl name="默认">
-      <SpecMarker :original="true" :lngLat="[2, 0]" />
+      <spec-marker :original="true" :lngLat="[2, 0]" />
     </CheckControl>
     <CheckControl name="custom">
-      <SpecMarker :lngLat="[0, 0]">
+      <spec-marker :lngLat="[0, 0]">
         <div style="color: red">custom<br />marker</div>
-      </SpecMarker>
+      </spec-marker>
     </CheckControl>
     <CheckControl name="with popup">
-      <SpecPopup>
+      <spec-popup>
         <div style="color: red">popup content</div>
-        <SpecMarker :original="true" :lngLat="[4, 0]" color="blue" />
-      </SpecPopup>
+        <spec-marker :original="true" :lngLat="[4, 0]" color="blue" />
+      </spec-popup>
     </CheckControl>
     <CheckControl name="draggable">
-      <SpecMarker :original="true" :lngLat="lngLat" :draggable="true" :onDragEnd="handleDrag" />
+      <spec-marker :original="true" :lngLat="lngLat" :draggable="true" :onDragEnd="handleDrag" />
     </CheckControl>
   </div>
 </template>
@@ -23,10 +23,9 @@
 <script lang="ts">
 import { Vue, Component } from "vue-property-decorator";
 import CheckControl from "../CheckControl.vue";
-import { SpecMarker, SpecPopup } from "@mapbox-start/vue-bridge";
 import { Marker, MapboxEvent } from "mapbox-gl";
 @Component({
-  components: { CheckControl, SpecMarker, SpecPopup },
+  components: { CheckControl },
 })
 export default class MarkerDemo extends Vue {
   lngLat: [number, number] = [6, 0];
