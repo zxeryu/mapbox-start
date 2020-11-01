@@ -9,6 +9,8 @@
           <MarkerDemo />
           <h2 style="margin-top: 1em">Layer</h2>
           <LayerDemo />
+          <h2 style="margin-top: 1em">Source</h2>
+          <SourceDemo />
         </div>
       </TopLeftContainer>
     </spec-map>
@@ -20,9 +22,11 @@ import { Component, Vue } from "vue-property-decorator";
 import { TopLeftContainer } from "@mapbox-start/vue-bridge";
 import MarkerDemo from "./components/MarkerDemo.vue";
 import LayerDemo from "./components/LayerDemo.vue";
+import SourceDemo from "./components/SourceDemo.vue";
 
 @Component({
   components: {
+    SourceDemo,
     LayerDemo,
     MarkerDemo,
     TopLeftContainer,
