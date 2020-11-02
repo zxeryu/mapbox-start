@@ -11,6 +11,10 @@
           <LayerDemo />
           <h2 style="margin-top: 1em">Source</h2>
           <SourceDemo />
+          <h2 style="margin-top: 1em">Control</h2>
+          <ControlDemo />
+          <h2 style="margin-top: 1em">Some Api</h2>
+          <ApiDemo />
         </div>
       </TopLeftContainer>
     </spec-map>
@@ -23,9 +27,13 @@ import { TopLeftContainer } from "@mapbox-start/vue-bridge";
 import MarkerDemo from "./components/MarkerDemo.vue";
 import LayerDemo from "./components/LayerDemo.vue";
 import SourceDemo from "./components/SourceDemo.vue";
+import ControlDemo from "./components/ControlDemo.vue";
+import ApiDemo from "./components/ApiDemo.vue";
 
 @Component({
   components: {
+    ApiDemo,
+    ControlDemo,
     SourceDemo,
     LayerDemo,
     MarkerDemo,
