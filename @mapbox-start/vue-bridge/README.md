@@ -1,11 +1,45 @@
-# `vue-bridge`
+# `react-bridge`
 
-> TODO: description
+> mapbox-gl vue bridge
+
+## Necessary
+
+```
+1. <script src="https://api.mapbox.com/mapbox-gl-js/v1.12.0/mapbox-gl.js"></script>
+   <link href="https://api.mapbox.com/mapbox-gl-js/v1.12.0/mapbox-gl.css" rel="stylesheet" />
+2. "vue": "2.x","uuid": "8.x","lodash": "4.x"
+```
+
+## Install
+
+```shell script
+yarn add @mapbox-start/vue-bridge
+```
 
 ## Usage
 
-```
-const vueBridge = require('vue-bridge');
+```jsx
+import {
+  SpecMap,
+  SpecMarker,
+  SpecPopup,
+  SpecSourceGeoJSON,
+  SpecLayerSymbol,
+  SpecLayerEvent,
+} from "@mapbox-start/vue-bridge";
 
-// TODO: DEMONSTRATE API
+//marker popup
+<SpecMap {...props}>
+  <SpecMarker />
+  <SpecPopup />
+</SpecMap>;
+
+//source layer
+<SpecSourceGeoJSON>
+  <SpecLayerSymbol>
+    <SpecLayerEvent />
+  </SpecLayerSymbol>
+</SpecSourceGeoJSON>;
 ```
+
+[详细 demo](https://github.com/zxeryu/mapbox-start/tree/main/example/demo-vue)
