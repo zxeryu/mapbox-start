@@ -1,6 +1,6 @@
 {
   "name": "@mapbox-start/react-bridge",
-  "version": "0.0.0",
+  "version": "0.1.0",
   "description": "> TODO: description",
   "author": "zx <zxpstudy@163.com>",
   "homepage": "https://github.com/zxeryu/mapbox-start#readme",
@@ -26,10 +26,10 @@
   },
   "peerDependencies": {
     "@babel/runtime-corejs3": "*",
+    "lodash": "4.x",
     "react": "16.x",
     "react-dom": "16.x",
-    "uuid": "8.x",
-    "lodash": "4.x"
+    "uuid": "8.x"
   },
   "devDependencies": {
     "@types/mapbox-gl": "^1.12.5"
