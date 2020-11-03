@@ -19,7 +19,7 @@
     "url": "git+https://github.com/zxeryu/mapbox-start.git"
   },
   "scripts": {
-    "test": "echo \"Error: run tests from root\" && exit 1"
+    "prepare": "rollup -c rollup.config.js"
   },
   "bugs": {
     "url": "https://github.com/zxeryu/mapbox-start/issues"
@@ -27,6 +27,7 @@
   "peerDependencies": {
     "@babel/runtime-corejs3": "*",
     "react": "16.x",
+    "react-dom": "16.x",
     "uuid": "8.x",
     "lodash": "4.x"
   },
