@@ -1,7 +1,6 @@
 import { Component, Prop, Inject } from "vue-property-decorator";
-import { Empty } from "./core";
+import { Empty, Layer } from "./core";
 import { Map, MapboxGeoJSONFeature, MapLayerEventType, MapLayerMouseEvent } from "mapbox-gl";
-import { Layer } from "./Layer";
 import { Dictionary, forEach } from "lodash";
 
 @Component

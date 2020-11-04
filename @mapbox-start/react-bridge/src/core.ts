@@ -1,7 +1,46 @@
-import { Source } from "./Source";
+import { MapSource } from "./component";
+import { Layer as ILayer, Map, Source as ISource } from "mapbox-gl";
 import { v4 as uuid } from "uuid";
-import { Map, Layer as ILayer } from "mapbox-gl";
-import { pickBy, identity } from "lodash";
+import { identity, pickBy, some } from "lodash";
+
+export class Source<T extends keyof MapSource, TLayerID extends string = string> {
+  private m: Map | undefined;
+
+  static from<T extends keyof MapSource>(type: T, opts: MapSource[T]["option"]): Source<T> {
+    const t = type === "rasterDem" ? "raster-dem" : type;
+    return new Source<T>({ ...opts, type: t } as any);
+  }
+
+  constructor(private opts: MapSource[T]["option"] & { type: ISource }, public id: string = uuid()) {}
+
+  get(): MapSource[T]["impl"] | null {
+    if (!this.m) return null;
+    return this.m.getSource(this.id) as MapSource[T]["impl"];
+  }
+
+  named(id?: string) {
+    return new Source<T, TLayerID>(this.opts, id);
+  }
+
+  addTo(m: Map) {
+    if (m.getSource(this.id)) {
+      return this;
+    }
+    this.m = m.addSource(this.id, this.opts as any);
+    return this;
+  }
+
+  remove() {
+    if (!this.m) return;
+    const isUse = some(this.m.getStyle().layers, (layer) => {
+      return layer.source === this.id;
+    });
+    if (!isUse) {
+      this.m.removeSource(this.id);
+      this.m = undefined;
+    }
+  }
+}
 
 export class Layer {
   static from(source: Source<any>, sourceLayer?: string): Layer {

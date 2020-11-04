@@ -23,10 +23,8 @@ import {
   Layer as ILayer,
 } from "mapbox-gl";
 import { CreateElement, VNode } from "vue";
-import { Provider } from "../core";
-import { Layer } from "../Layer";
+import { Layer, Provider, Source } from "../core";
 import { get } from "lodash";
-import { Source } from "../Source";
 
 @Component
 class LayerProvide extends Provider<Layer> {

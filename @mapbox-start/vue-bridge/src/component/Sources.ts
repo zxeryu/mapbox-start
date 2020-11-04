@@ -1,9 +1,55 @@
 import { Vue, Component, Inject, Prop, Provide, Watch } from "vue-property-decorator";
-import { Map, Popup, PromoteIdSpecification } from "mapbox-gl";
-import { MapSource, Source } from "../Source";
+import {
+  CanvasSource,
+  CanvasSourceOptions,
+  GeoJSONSource,
+  GeoJSONSourceOptions,
+  ImageSource,
+  ImageSourceOptions,
+  Map,
+  Popup,
+  PromoteIdSpecification,
+  RasterDemSource,
+  RasterSource,
+  VectorSource,
+  VectorSourceImpl,
+  VideoSource,
+  VideoSourceOptions,
+} from "mapbox-gl";
 import { CreateElement, VNode } from "vue";
-import { Provider } from "../core";
+import { Provider, Source } from "../core";
 import { get } from "lodash";
+
+export type MapSource = {
+  vector: {
+    impl: VectorSourceImpl;
+    option: Omit<VectorSource, "type">;
+  };
+  raster: {
+    impl: RasterSource;
+    option: Omit<RasterSource, "type">;
+  };
+  rasterDem: {
+    impl: RasterDemSource;
+    option: Omit<RasterDemSource, "type">;
+  };
+  geojson: {
+    impl: GeoJSONSource;
+    option: Omit<GeoJSONSourceOptions, "data"> & { data?: any };
+  };
+  image: {
+    impl: ImageSource;
+    option: ImageSourceOptions;
+  };
+  video: {
+    impl: VideoSource;
+    option: VideoSourceOptions;
+  };
+  canvas: {
+    impl: CanvasSource;
+    option: CanvasSourceOptions;
+  };
+};
 
 @Component
 class SourceProvide extends Provider<Source<any>> {

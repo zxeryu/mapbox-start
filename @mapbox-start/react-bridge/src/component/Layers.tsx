@@ -20,9 +20,9 @@ import {
   SymbolPaint,
 } from "mapbox-gl";
 import React, { createContext, ReactNode, useContext, useEffect, useMemo } from "react";
-import { Layer } from "../Layer";
 import { useMap } from "../Map";
 import { useSpecSource } from "./Sources";
+import { Layer } from "../core";
 
 const SpecLayerContext = createContext<{ layer: Layer }>({} as any);
 
