@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.2.0](https://github.com/zxeryu/mapbox-start/compare/@mapbox-start/react-bridge@0.1.2...@mapbox-start/react-bridge@0.2.0) (2020-11-04)
+
+### Features
+
+- add custom layer creator ([c7eb05c](https://github.com/zxeryu/mapbox-start/commit/c7eb05cebe753607035a4ad6a7e5f4eaedb2f992))
+
 ## [0.1.2](https://github.com/zxeryu/mapbox-start/compare/@mapbox-start/react-bridge@0.1.0...@mapbox-start/react-bridge@0.1.2) (2020-11-03)
 
 **Note:** Version bump only for package @mapbox-start/react-bridge
